@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login | Esports</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<style>
+  :root {
+    --cyan:#00c4e8;--purple:#7c3aed;--green:#00d97e;
+    --red:#f43f5e;--gold:#f59e0b;--orange:#f97316;
+    --grad:linear-gradient(135deg,#00c4e8 0%,#7c3aed 100%);
+  }
+  :root{--bg:#f1f2fc;--bg2:#eaebf9;--surf:#fff;--surf2:#eceef9;--surf3:#e3e5f6;--border:rgba(0,0,0,.07);--border-h:rgba(0,120,200,.25);--t1:#0a0a1e;--t2:#5050a0;--tm:#9090c0;--sh:0 2px 12px rgba(0,0,0,.06);--sh-lg:0 20px 60px rgba(0,0,0,.08);--glow-c:rgba(0,196,232,.08);--glow-p:rgba(124,58,237,.08);--glass-bg:rgba(255,255,255,0.85);}
+  @media(prefers-color-scheme:dark){:root{--bg:#06060f;--bg2:#09091a;--surf:#0d0d1f;--surf2:#12122a;--surf3:#181838;--border:rgba(255,255,255,.07);--border-h:rgba(0,196,232,.28);--t1:#eeeef8;--t2:#7272a8;--tm:#38386a;--sh:0 2px 12px rgba(0,0,0,.5);--sh-lg:0 20px 60px rgba(0,0,0,.5);--glow-c:rgba(0,196,232,.15);--glow-p:rgba(124,58,237,.15);--glass-bg:rgba(13,13,31,0.7);}}
+  [data-theme="light"]{--bg:#f1f2fc;--bg2:#eaebf9;--surf:#fff;--surf2:#eceef9;--surf3:#e3e5f6;--border:rgba(0,0,0,.07);--border-h:rgba(0,120,200,.25);--t1:#0a0a1e;--t2:#5050a0;--tm:#9090c0;--sh:0 2px 12px rgba(0,0,0,.06);--sh-lg:0 20px 60px rgba(0,0,0,.08);--glow-c:rgba(0,196,232,.08);--glow-p:rgba(124,58,237,.08);--glass-bg:rgba(255,255,255,0.85);}
+  [data-theme="dark"]{--bg:#06060f;--bg2:#09091a;--surf:#0d0d1f;--surf2:#12122a;--surf3:#181838;--border:rgba(255,255,255,.07);--border-h:rgba(0,196,232,.28);--t1:#eeeef8;--t2:#7272a8;--tm:#38386a;--sh:0 2px 12px rgba(0,0,0,.5);--sh-lg:0 20px 60px rgba(0,0,0,.5);--glow-c:rgba(0,196,232,.15);--glow-p:rgba(124,58,237,.15);--glass-bg:rgba(13,13,31,0.7);}
+  
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  [x-cloak] { display: none !important; }
+  
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--t1);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  /* Animated Glowing Orbs Background */
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.4;
+    animation: float 20s infinite ease-in-out alternate;
+    z-index: 0;
+  }
+  .orb-1 { width: 400px; height: 400px; background: var(--cyan); top: -10%; left: -10%; animation-delay: 0s; }
+  .orb-2 { width: 500px; height: 500px; background: var(--purple); bottom: -20%; right: -10%; animation-delay: -5s; }
+  .orb-3 { width: 300px; height: 300px; background: #00d97e; top: 40%; left: 60%; animation-delay: -10s; opacity: 0.2; }
+  
+  @keyframes float {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(100px, 50px) scale(1.2); }
+    100% { transform: translate(-50px, 100px) scale(0.9); }
+  }
+  
+  /* Theme Toggle */
+  .theme-toggle {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: var(--surf);
+    border: 1px solid var(--border);
+    color: var(--t1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.2s;
+    z-index: 20;
+    box-shadow: var(--sh);
+  }
+  .theme-toggle:hover { background: var(--surf2); border-color: var(--cyan); color: var(--cyan); }
+  
+  [data-theme="light"] .theme-toggle .moon-icon { display: block; }
+  [data-theme="light"] .theme-toggle .sun-icon { display: none; }
+  [data-theme="dark"] .theme-toggle .moon-icon { display: none; }
+  [data-theme="dark"] .theme-toggle .sun-icon { display: block; }
+
+  /* Login Container */
+  .login-wrapper {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 440px;
+    padding: 20px;
+  }
+  
+  .glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 40px;
+    box-shadow: var(--sh-lg);
+  }
+  
+  /* Header */
+  .logo-box {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: var(--grad);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 24px rgba(0, 196, 232, 0.3);
+  }
+  
+  h1 { font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 800; margin-bottom: 8px; }
+  p.subtitle { color: var(--tm); font-size: 14px; margin-bottom: 32px; }
+  
+  /* Form Elements */
+  .form-group { margin-bottom: 20px; }
+  .form-label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--t1); }
+  
+  .inp-wrap { position: relative; display: flex; align-items: center; }
+  .inp-wrap svg.ico-left { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--tm); pointer-events: none; }
+  
+  .inp {
+    width: 100%;
+    background: var(--surf2);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px 14px 44px;
+    color: var(--t1);
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: all 0.2s;
+  }
+  .inp.pwd-inp { padding-right: 44px; }
+  .inp:focus {
+    border-color: var(--cyan);
+    background: var(--surf);
+    box-shadow: 0 0 0 4px var(--glow-c);
+  }
+  
+  .pwd-toggle {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--tm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    transition: color 0.2s;
+  }
+  .pwd-toggle:hover { color: var(--cyan); }
+  
+  .options { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; font-size: 13px; }
+  .options a { color: var(--cyan); text-decoration: none; font-weight: 600; transition: 0.2s; }
+  .options a:hover { filter: brightness(1.2); }
+  
+  .check-wrap { display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; color: var(--tm); }
+  .check-wrap input { accent-color: var(--cyan); width: 16px; height: 16px; cursor: pointer; }
+  
+  /* Button */
+  .btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    background: var(--grad);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'Space Grotesk', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px rgba(0, 196, 232, 0.25);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-text {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+    transition: 0.2s;
+  }
+  
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(0, 196, 232, 0.4);
+  }
+  .btn:active { transform: translateY(0); }
+  
+  /* Loading state */
+  .btn.is-loading { pointer-events: none; }
+  .btn.is-loading .btn-text { opacity: 0; transform: scale(0.9); }
+  .btn.is-loading::before {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  
+  @keyframes spin { to { transform: rotate(360deg); } }
+  
+  @media (max-width: 480px) {
+    .glass-card { padding: 30px 20px; }
+  }
+</style>
+</head>
+<body x-data="loginApp()">
+
+  <!-- Background Glows -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <!-- Theme Toggle -->
+  <button class="theme-toggle" @click="toggleTheme()" title="Toggle Light/Dark Mode">
+    <div x-show="theme === 'light'" x-cloak style="display:flex"><i data-lucide="moon" width="20" height="20"></i></div>
+    <div x-show="theme === 'dark'" x-cloak style="display:flex"><i data-lucide="sun" width="20" height="20"></i></div>
+  </button>
+
+  <div class="login-wrapper">
+    <div class="glass-card">
+      <div class="logo-box">
+        <i data-lucide="shield-check" color="#fff" stroke-width="2.5"></i>
+      </div>
+      <h1>Admin Portal</h1>
+      <p class="subtitle">Enter your credentials to access the dashboard</p>
+      
+      <form @submit.prevent="doLogin">
+        <div class="form-group">
+          <label class="form-label" for="inp_email">Email Address</label>
+          <div class="inp-wrap">
+            <i data-lucide="mail" width="18" height="18" class="ico-left"></i>
+            <input type="email" id="inp_email" class="inp" placeholder="admin@esports.gg" x-model="formEmail" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label" for="inp_password">Password</label>
+          <div class="inp-wrap">
+            <i data-lucide="lock" width="18" height="18" class="ico-left"></i>
+            <input :type="showPassword ? 'text' : 'password'" id="inp_password" class="inp pwd-inp" placeholder="••••••••" x-model="formPassword" required>
+            <button type="button" class="pwd-toggle" @click="showPassword = !showPassword" tabindex="-1">
+              <i data-lucide="eye" width="18" height="18" x-show="!showPassword"></i>
+              <i data-lucide="eye-off" width="18" height="18" x-show="showPassword" x-cloak></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="options">
+          <label class="check-wrap">
+            <input type="checkbox">
+            <span>Remember me</span>
+          </label>
+          <a href="#">Forgot Password?</a>
+        </div>
+        
+        <button type="submit" class="btn" :class="isLoading ? 'is-loading' : ''">
+          <div class="btn-text">
+            <span>Sign In</span>
+            <i data-lucide="arrow-right" width="18" height="18"></i>
+          </div>
+        </button>
+      </form>
+      
+      <div style="text-align:center;margin-top:24px;font-size:12px;color:var(--tm);display:flex;align-items:center;justify-content:center;gap:6px">
+        <i data-lucide="shield" width="14" height="14"></i>
+        Secure SSL Encrypted Connection
+      </div>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+    
+    function loginApp() {
+      return {
+        formEmail: '',
+        formPassword: '',
+        showPassword: false,
+        isLoading: false,
+        theme: Alpine.$persist('system').as('admin_theme_v3'),
+        
+        init() {
+          const apply = t => {
+            document.documentElement.setAttribute('data-theme', t);
+          };
+          if (this.theme === 'system') {
+            apply(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => { 
+              if(this.theme==='system') apply(e.matches ? 'dark' : 'light'); 
+            });
+          } else { apply(this.theme); }
+        },
+        
+        toggleTheme() {
+          const cur = document.documentElement.getAttribute('data-theme');
+          const next = cur === 'dark' ? 'light' : 'dark';
+          this.theme = next;
+          document.documentElement.setAttribute('data-theme', next);
+        },
+
+        doLogin() {
+          if(!this.formEmail || !this.formPassword) return;
+          this.isLoading = true;
+          // Simulate network request
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 1500);
+        }
+      }
+    }
+  </script>
+</body>
+</html>
